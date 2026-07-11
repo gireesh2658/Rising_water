@@ -66,16 +66,6 @@ class User(db.Model):
     
     weather_data = db.relationship('WeatherData', backref='user', lazy=True)
 
-class MLModel(db.Model):
-    __tablename__ = 'ml_models'
-    ModelID = db.Column(db.Integer, primary_key=True)
-    ModelName = db.Column(db.String(100), nullable=False)
-    AlgorithmType = db.Column(db.String(100), nullable=False)
-    Accuracy = db.Column(db.Float, nullable=True)
-    ModelFile = db.Column(db.String(255), nullable=False)
-    
-    predictions = db.relationship('PredictionResult', backref='model', lazy=True)
-
 class WeatherData(db.Model):
     __tablename__ = 'weather_data'
     DataID = db.Column(db.Integer, primary_key=True)
@@ -92,7 +82,6 @@ class PredictionResult(db.Model):
     __tablename__ = 'prediction_results'
     PredictionID = db.Column(db.Integer, primary_key=True)
     DataID = db.Column(db.Integer, db.ForeignKey('weather_data.DataID'), nullable=False)
-    ModelID = db.Column(db.Integer, db.ForeignKey('ml_models.ModelID'), nullable=True)
     FloodResult = db.Column(db.String(50), nullable=False)
     FloodProbability = db.Column(db.Float, nullable=False)
     PredictionDate = db.Column(db.DateTime, nullable=False, default=datetime.now)

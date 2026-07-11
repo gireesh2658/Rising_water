@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, classification_report, roc_curve
 from imblearn.over_sampling import SMOTE
@@ -144,11 +145,12 @@ def evaluate_models(X_train, y_train):
     logging.info("Evaluating models with 10-fold Stratified CV...")
     models = {
         'Logistic Regression': LogisticRegression(
-            max_iter=1000, random_state=42), 'Decision Tree': DecisionTreeClassifier(
-            random_state=42), 'Random Forest': RandomForestClassifier(
-                random_state=42), 'Gradient Boosting': GradientBoostingClassifier(
-                    random_state=42), 'XGBoost': XGBClassifier(
-                        use_label_encoder=False, eval_metric='logloss', random_state=42)}
+            max_iter=1000, random_state=42),        'Decision Tree': DecisionTreeClassifier(random_state=42), 
+        'Random Forest': RandomForestClassifier(random_state=42), 
+        'Gradient Boosting': GradientBoostingClassifier(random_state=42), 
+        'XGBoost': XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42),
+        'KNN': KNeighborsClassifier()
+    }
 
     skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
     results = []
@@ -202,24 +204,13 @@ def tune_hyperparameters(model, model_name, X_train, y_train):
     logging.info(f"Tuning hyperparameters for {model_name}...")
 
     param_grids = {
-        'Logistic Regression': {
-            'C': [
-                0.01, 0.1, 1, 10, 100], 'penalty': ['l2']}, 'Decision Tree': {
-            'max_depth': [
-                None, 5, 10, 15, 20], 'min_samples_split': [
-                2, 5, 10]}, 'Random Forest': {
-                            'n_estimators': [
-                                50, 100, 200], 'max_depth': [
-                                    None, 10, 20], 'min_samples_split': [
-                                        2, 5]}, 'Gradient Boosting': {
-                                            'n_estimators': [
-                                                50, 100, 200], 'learning_rate': [
-                                                    0.01, 0.1, 0.2], 'max_depth': [
-                                                        3, 5, 7]}, 'XGBoost': {
-                                                            'n_estimators': [
-                                                                50, 100, 200], 'learning_rate': [
-                                                                    0.01, 0.1, 0.2], 'max_depth': [
-                                                                        3, 5, 7]}}
+        'Logistic Regression': {'C': [0.01, 0.1, 1, 10, 100], 'penalty': ['l2']},
+        'Decision Tree': {'max_depth': [None, 5, 10, 15, 20], 'min_samples_split': [2, 5, 10]},
+        'Random Forest': {'n_estimators': [50, 100, 200], 'max_depth': [None, 10, 20], 'min_samples_split': [2, 5]},
+        'Gradient Boosting': {'n_estimators': [50, 100, 200], 'learning_rate': [0.01, 0.1, 0.2], 'max_depth': [3, 5, 7]},
+        'XGBoost': {'n_estimators': [50, 100, 200], 'learning_rate': [0.01, 0.1, 0.2], 'max_depth': [3, 5, 7]},
+        'KNN': {'n_neighbors': [3, 5, 7, 9, 11], 'weights': ['uniform', 'distance']}
+    }
 
     if model_name not in param_grids:
         return model
