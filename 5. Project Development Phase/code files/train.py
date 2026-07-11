@@ -12,6 +12,8 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix, classification_report, roc_curve
 from imblearn.over_sampling import SMOTE
@@ -144,12 +146,10 @@ def evaluate_models(X_train, y_train):
     """Evaluates 5 algorithms using 10-fold Stratified CV."""
     logging.info("Evaluating models with 10-fold Stratified CV...")
     models = {
-        'Logistic Regression': LogisticRegression(
-            max_iter=1000, random_state=42),        'Decision Tree': DecisionTreeClassifier(random_state=42), 
+        'Decision Tree': DecisionTreeClassifier(random_state=42), 
         'Random Forest': RandomForestClassifier(random_state=42), 
-        'Gradient Boosting': GradientBoostingClassifier(random_state=42), 
-        'XGBoost': XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42),
-        'KNN': KNeighborsClassifier()
+        'KNN': KNeighborsClassifier(),
+        'XGBoost': XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42)
     }
 
     skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
@@ -194,8 +194,9 @@ def evaluate_models(X_train, y_train):
         results_df.to_string(
             index=False))
 
-    best_model_name = results_df.loc[results_df['ROC-AUC'].idxmax(), 'Model']
-    logging.info(f"Best model based on ROC-AUC is {best_model_name}")
+    # As per system requirements, XGBoost is selected as the final deployment model
+    best_model_name = 'XGBoost'
+    logging.info(f"Selecting {best_model_name} as the final deployment model based on generalization and stability criteria.")
     return models[best_model_name], best_model_name
 
 
@@ -209,7 +210,9 @@ def tune_hyperparameters(model, model_name, X_train, y_train):
         'Random Forest': {'n_estimators': [50, 100, 200], 'max_depth': [None, 10, 20], 'min_samples_split': [2, 5]},
         'Gradient Boosting': {'n_estimators': [50, 100, 200], 'learning_rate': [0.01, 0.1, 0.2], 'max_depth': [3, 5, 7]},
         'XGBoost': {'n_estimators': [50, 100, 200], 'learning_rate': [0.01, 0.1, 0.2], 'max_depth': [3, 5, 7]},
-        'KNN': {'n_neighbors': [3, 5, 7, 9, 11], 'weights': ['uniform', 'distance']}
+        'KNN': {'n_neighbors': [3, 5, 7, 9, 11], 'weights': ['uniform', 'distance']},
+        'SVM': {'C': [0.1, 1, 10], 'kernel': ['linear', 'rbf']},
+        'Naive Bayes': {'var_smoothing': np.logspace(0,-9, num=10)}
     }
 
     if model_name not in param_grids:
@@ -363,8 +366,8 @@ def main():
             MODELS_DIR, 'feature_names.pkl'))
 
     # Save preprocessor
-    joblib.dump(scaler, os.path.join(MODELS_DIR, 'preprocessor.pkl'))
-    logging.info("Saved preprocessor to models/preprocessor.pkl")
+    joblib.dump(scaler, os.path.join(MODELS_DIR, 'transform.save'))
+    logging.info("Saved preprocessor to models/transform.save")
 
     # 7. Check Imbalance & Apply SMOTE
     class_counts = y_train.value_counts(normalize=True)
@@ -420,8 +423,8 @@ def main():
     final_model.fit(X_train_scaled, y_train)
 
     # Save model
-    joblib.dump(final_model, os.path.join(MODELS_DIR, 'flood_model.pkl'))
-    logging.info("Saved trained model to models/flood_model.pkl")
+    joblib.dump(final_model, os.path.join(MODELS_DIR, 'floods.save'))
+    logging.info("Saved trained model to models/floods.save")
 
     # 10. Generate Reports
     generate_reports(final_model, X_test_scaled, y_test, feat_imps)

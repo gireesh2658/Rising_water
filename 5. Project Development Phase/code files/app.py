@@ -167,13 +167,13 @@ def load_models():
     """Load the trained ML model, scaler, and feature names from disk."""
     global model, preprocessor, feature_names
     try:
-        model_path = os.path.join(MODELS_DIR, 'flood_model.pkl')
-        scaler_path = os.path.join(MODELS_DIR, 'preprocessor.pkl')
+        model_path = os.path.join(MODELS_DIR, 'floods.save')
+        scaler_path = os.path.join(MODELS_DIR, 'transform.save')
         features_path = os.path.join(MODELS_DIR, 'feature_names.pkl')
 
         for path, name in [
-            (model_path, 'flood_model.pkl'),
-            (scaler_path, 'preprocessor.pkl'),
+            (model_path, 'floods.save'),
+            (scaler_path, 'transform.save'),
             (features_path, 'feature_names.pkl')
         ]:
             if not os.path.isfile(path):

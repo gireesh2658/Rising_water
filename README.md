@@ -13,7 +13,7 @@ Built for the SmartBridge AI & ML Internship Track, Rising Waters addresses the 
 ```mermaid
 graph TD
     Client[Browser Client] -- POST /predict --> FlaskAPI[Flask Route: predict]
-    FlaskAPI -- Read Artifacts --> Model[XGBoost flood_model.pkl]
+    FlaskAPI -- Read Artifacts --> Model[XGBoost floods.save]
     FlaskAPI -- Insert Log --> Postgres[(PostgreSQL DB)]
     Model -- Return Probability --> FlaskAPI
     FlaskAPI -- JSON Response --> Client
@@ -27,7 +27,7 @@ graph TD
 | **Client UI** | Jinja2 / JS | Submits asynchronous `fetch` requests to the Flask backend |
 
 ## Key Features
-- **Risk Prediction (`app.py:predict`)**: Processes 8 meteorological inputs through a serialized XGBoost model (`flood_model.pkl`) and StandardScaler (`preprocessor.pkl`), returning a probability score.
+- **Risk Prediction (`app.py:predict`)**: Processes 8 meteorological inputs through a serialized XGBoost model (`floods.save`) and StandardScaler (`transform.save`), returning a probability score.
 - **User Authentication (`app.py:login_page`)**: Implements session-based authentication with PBKDF2 SHA256 password hashing via `werkzeug.security`.
 - **Prediction Auditing (`app.py:history_page`)**: Automatically logs all user predictions to a PostgreSQL `prediction_results` table for historical review and filtering.
 - **Model Evaluation (`reports/`)**: Pre-generated visual reports (ROC curve, confusion matrix) served statically on a dedicated dashboard route.
@@ -70,8 +70,8 @@ code files/
 ├── data/
 │   └── flood_dataset_expanded.csv  # 955-row training dataset
 ├── models/
-│   ├── flood_model.pkl     # Serialized XGBoost classifier
-│   ├── preprocessor.pkl    # Fitted StandardScaler
+│   ├── floods.save         # Serialized XGBoost classifier
+│   ├── transform.save      # Fitted StandardScaler
 │   └── feature_names.pkl   # Expected feature order
 ├── reports/                # Static visual evaluation metrics
 ├── static/                 # CSS, JS, and background assets
@@ -136,7 +136,7 @@ code files/
   - Outliers capped using the IQR method (1.5x bounds).
   - Features correlated >0.90 dropped.
   - SMOTE applied to balance the training set.
-  - Evaluated via 10-Fold Stratified CV across 6 models (Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, XGBoost, KNN).
+  - Evaluated via 10-Fold Stratified CV across 4 models (Decision Tree, Random Forest, K-Nearest Neighbors (KNN), XGBoost).
   - Best model (XGBoost) tuned with `RandomizedSearchCV` (50 iterations).
 - **Performance Metrics:** Accuracy: **0.99**, F1-Score: **0.99** *(measured on a 191-sample 20% holdout set; verified via `reports/classification_report.txt`)*.
 
@@ -148,6 +148,5 @@ code files/
 
 
 
-## License / Author / Contact
-- **License:** No `LICENSE` file is declared in the repository.
-- **Author:** gireesh2658 (SmartBridge AI & ML Internship Track)
+## 
+- **Author:** gireesh  (SmartBridge AI & ML Internship Track)
