@@ -1,0 +1,5 @@
+Method,Name,Error,Occurrences,First Seen,Last Seen
+GET,/history,"ConnectionRefusedError(10061, '[WinError 10061] No connection could be made because the target machine actively refused it.')",3,2026-06-30T08:35:00Z,2026-06-30T08:35:03Z
+GET,/Predict,"ConnectionRefusedError(10061, '[WinError 10061] No connection could be made because the target machine actively refused it.')",8,2026-06-30T08:34:59Z,2026-06-30T08:35:04Z
+POST,/predict,"ConnectionRefusedError(10061, '[WinError 10061] No connection could be made because the target machine actively refused it.')",20,2026-06-30T08:34:59Z,2026-06-30T08:35:05Z
+GET,/,"ConnectionRefusedError(10061, '[WinError 10061] No connection could be made because the target machine actively refused it.')",8,2026-06-30T08:35:00Z,2026-06-30T08:35:05Z

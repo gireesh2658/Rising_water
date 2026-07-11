@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View past flood predictions made by Rising Waters ML system.">
+    <title>Prediction History — Rising Waters</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- History Page Specific Styles --- */
+        .history-section {
+            padding: 40px 50px 80px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .history-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .history-stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 16px 24px;
+            text-align: center;
+        }
+
+        .history-stat-card .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .history-stat-card .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
+
+        .stat-value.high { color: #f5576c; }
+        .stat-value.low { color: #43e97b; }
+        .stat-value.total { color: #4facfe; }
+
+        /* Controls bar */
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #4facfe;
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        .btn-clear {
+            padding: 12px 24px;
+            background: rgba(245, 87, 108, 0.15);
+            border: 1px solid rgba(245, 87, 108, 0.3);
+            color: #f5576c;
+            border-radius: 12px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-clear:hover {
+            background: rgba(245, 87, 108, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Table Container */
+        .table-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .history-table thead {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .history-table th {
+            padding: 16px 18px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: nowrap;
+        }
+
+        .history-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.85);
+            transition: background 0.2s;
+        }
+
+        .history-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .history-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Result badges */
+        .badge-high {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: rgba(245, 87, 108, 0.15);
+            color: #f5576c;
+            border: 1px solid rgba(245, 87, 108, 0.3);
+        }
+
+        .badge-low {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: rgba(67, 233, 123, 0.12);
+            color: #43e97b;
+            border: 1px solid rgba(67, 233, 123, 0.3);
+        }
+
+        .probability-bar {
+            width: 80px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .probability-fill.high {
+            background: linear-gradient(90deg, #f5576c, #ff8a5c);
+        }
+
+        .probability-fill.low {
+            background: linear-gradient(90deg, #43e97b, #38f9d7);
+        }
+
+        .timestamp {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .empty-state p {
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .empty-state .btn {
+            display: inline-flex;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .history-section { padding: 20px; }
+            .history-header { flex-direction: column; align-items: flex-start; }
+            .history-header h1 { font-size: 1.8rem; }
+            .table-container { overflow-x: auto; }
+            .history-stats { flex-wrap: wrap; }
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .history-section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .history-table tbody tr {
+            animation: fadeInUp 0.4s ease-out;
+            animation-fill-mode: both;
+        }
+
+        /* Staggered row animation */
+        .history-table tbody tr:nth-child(1) { animation-delay: 0.05s; }
+        .history-table tbody tr:nth-child(2) { animation-delay: 0.10s; }
+        .history-table tbody tr:nth-child(3) { animation-delay: 0.15s; }
+        .history-table tbody tr:nth-child(4) { animation-delay: 0.20s; }
+        .history-table tbody tr:nth-child(5) { animation-delay: 0.25s; }
+        .history-table tbody tr:nth-child(6) { animation-delay: 0.30s; }
+        .history-table tbody tr:nth-child(7) { animation-delay: 0.35s; }
+        .history-table tbody tr:nth-child(8) { animation-delay: 0.40s; }
+        .history-table tbody tr:nth-child(9) { animation-delay: 0.45s; }
+        .history-table tbody tr:nth-child(10) { animation-delay: 0.50s; }
+    </style>
+</head>
+<body class="home-page">
+    <!-- Animated Background -->
+    <div class="rain-container" id="rainContainer"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">🌊</span>
+            <span class="nav-title">Rising Waters</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/Predict" class="nav-link">Predict</a>
+            <a href="/reports" class="nav-link">Reports</a>
+            <a href="/history" class="nav-link active">History</a>
+            {% if session.get('user_id') %}
+                <span class="nav-link" style="color: #00d2ff; font-weight: 600;">Welcome, {{ session.get('user_name') }}</span>
+                <a href="/logout" class="nav-link" style="color: #f87171;">Logout</a>
+            {% else %}
+                <a href="/login" class="nav-link" style="color: #4ade80;">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <section class="history-section">
+        <!-- Header with Stats -->
+        <div class="history-header">
+            <h1>Prediction <span class="gradient-text">History</span></h1>
+            <div class="history-stats">
+                <div class="history-stat-card">
+                    <div class="stat-value total" id="totalCount">{{ records|length }}</div>
+                    <div class="stat-label">Total Predictions</div>
+                </div>
+                <div class="history-stat-card">
+                    <div class="stat-value high" id="highCount">
+                        {{ records|selectattr('prediction', 'equalto', 'HIGH')|list|length }}
+                    </div>
+                    <div class="stat-label">High Risk</div>
+                </div>
+                <div class="history-stat-card">
+                    <div class="stat-value low" id="lowCount">
+                        {{ records|selectattr('prediction', 'equalto', 'LOW')|list|length }}
+                    </div>
+                    <div class="stat-label">Low Risk</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by date, result, or values...">
+            </div>
+            {% if records %}
+            <button class="btn-clear" id="clearBtn" onclick="clearHistory()">
+                🗑️ Clear All History
+            </button>
+            {% endif %}
+        </div>
+
+        {% if records %}
+        <!-- Data Table -->
+        <div class="table-container">
+            <table class="history-table" id="historyTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date & Time</th>
+                        <th>Temp (°C)</th>
+                        <th>Humidity (%)</th>
+                        <th>Cloud (%)</th>
+                        <th>Annual (mm)</th>
+                        <th>Result</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td style="color: rgba(255,255,255,0.3);">{{ loop.index }}</td>
+                        <td class="timestamp">{{ record.timestamp }}</td>
+                        <td>{{ record.temp }}</td>
+                        <td>{{ record.humidity }}</td>
+                        <td>{{ record.cloud_cover }}</td>
+                        <td>{{ record.annual }}</td>
+                        <td>
+                            {% if record.prediction == 'HIGH' %}
+                                <span class="badge-high">⚠️ HIGH</span>
+                            {% else %}
+                                <span class="badge-low">✅ LOW</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="probability-bar">
+                                <span class="probability-fill {{ 'high' if record.prediction == 'HIGH' else 'low' }}"
+                                      style="width: {{ (record.probability * 100)|round(1) }}%"></span>
+                            </span>
+                            {{ (record.probability * 100)|round(1) }}%
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="table-container">
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No Predictions Yet</h3>
+                <p>Start making flood predictions and they will automatically appear here as a historical record.</p>
+                <a href="/Predict" class="btn btn-primary">
+                    <span>🔮</span> Make Your First Prediction
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Rising Waters — A Machine Learning Approach to Flood Prediction</p>
+        <p class="footer-sub">Rising Waters Project | AI & ML Track</p>
+    </footer>
+
+    <script>
+        // Search / filter functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#historyTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // Clear history
+        async function clearHistory() {
+            if (!confirm('Are you sure you want to delete ALL prediction history? This cannot be undone.')) {
+                return;
+            }
+            try {
+                const response = await fetch('/api/history/clear', { method: 'POST' });
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to clear history.');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

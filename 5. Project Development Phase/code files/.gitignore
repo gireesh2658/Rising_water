@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.pyc
+.vscode/
+performance_report.png
+temp_diff.txt
+generate_performance_chart.py

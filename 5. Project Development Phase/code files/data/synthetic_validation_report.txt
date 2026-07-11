@@ -1,0 +1,89 @@
+======================================================================
+VALIDATION REPORT: Original vs Synthetic Dataset
+======================================================================
+
+Original: 115 rows | Synthetic: 955 rows
+
+--- CLASS DISTRIBUTION ---
+  Original:  flood=0: 99 (86.1%)  flood=1: 16 (13.9%)
+  Synthetic: flood=0: 519 (54.3%)  flood=1: 436 (45.7%)
+
+--- MEAN COMPARISON ---
+  Feature              Original     Synthetic     Diff%
+  Temp                    29.60         29.49      0.4%
+  Humidity                73.85         73.83      0.0%
+  Cloud Cover             36.29         36.53      0.7%
+  ANNUAL                2925.49       3165.21      8.2%
+  Jan-Feb                 27.74         26.11      5.9%
+  Mar-May                377.25        371.45      1.5%
+  Jun-Sep               2022.84       2272.83     12.4%
+  Oct-Dec                497.64        494.82      0.6%
+  avgjune                218.10        236.31      8.3%
+  sub                    439.80        504.79     14.8%
+
+--- MEDIAN COMPARISON ---
+  Feature              Original     Synthetic     Diff%
+  Temp                    30.00         30.00      0.0%
+  Humidity                74.00         74.00      0.0%
+  Cloud Cover             36.00         37.00      2.8%
+  ANNUAL                2937.50       3201.30      9.0%
+  Jan-Feb                 20.50         21.20      3.4%
+  Mar-May                342.00        332.70      2.7%
+  Jun-Sep               1948.70       2320.70     19.1%
+  Oct-Dec                501.50        490.00      2.3%
+  avgjune                211.03        235.20     11.5%
+  sub                    430.60        504.70     17.2%
+
+--- STANDARD DEVIATION COMPARISON ---
+  Feature              Original     Synthetic     Diff%
+  Temp                     1.12          1.08      3.7%
+  Humidity                 2.95          2.73      7.5%
+  Cloud Cover              4.33          4.43      2.3%
+  ANNUAL                 422.11        502.69     19.1%
+  Jan-Feb                 22.36         20.59      7.9%
+  Mar-May                151.09        165.78      9.7%
+  Jun-Sep                386.25        477.88     23.7%
+  Oct-Dec                129.86        126.38      2.7%
+  avgjune                 62.55         68.67      9.8%
+  sub                    210.44        236.47     12.4%
+
+--- CORRELATION WITH TARGET (flood) ---
+  Feature             Orig Corr    Synth Corr      Diff
+  Temp                  -0.0809       -0.1527    0.0718
+  Humidity               0.0202       -0.0127    0.0330
+  Cloud Cover            0.0898        0.0701    0.0197
+  ANNUAL                 0.6269        0.7535    0.1266
+  Jan-Feb               -0.0844       -0.1322    0.0477
+  Mar-May               -0.0176       -0.0119    0.0057
+  Jun-Sep                0.7052        0.8112    0.1060
+  Oct-Dec               -0.0249       -0.0332    0.0084
+  avgjune                0.3798        0.4369    0.0572
+  sub                    0.3498        0.3991    0.0492
+
+--- RANGE CHECK (Synthetic within realistic bounds) ---
+  Temp             Orig[28.0, 31.0]  Synth[28.0, 31.0]  [OK]
+  Humidity         Orig[70.0, 79.0]  Synth[70.0, 79.0]  [OK]
+  Cloud Cover      Orig[30.0, 44.0]  Synth[30.0, 44.0]  [OK]
+  ANNUAL           Orig[2068.8, 4257.8]  Synth[1991.8, 4842.1]  [OK]
+  Jan-Feb          Orig[0.3, 98.1]  Synth[0.0, 99.1]  [WARN]
+  Mar-May          Orig[89.9, 915.2]  Synth[84.2, 922.3]  [OK]
+  Jun-Sep          Orig[1104.3, 3451.3]  Synth[1104.3, 3461.1]  [OK]
+  Oct-Dec          Orig[166.6, 823.3]  Synth[165.8, 831.6]  [OK]
+  avgjune          Orig[65.6, 366.1]  Synth[62.2, 368.5]  [OK]
+  sub              Orig[34.2, 982.7]  Synth[18.3, 996.7]  [WARN]
+
+--- DISTRIBUTION OVERLAP (KS Test) ---
+  Feature             KS Stat     p-value    Similar?
+  Temp                 0.0549      0.8978         YES
+  Humidity             0.0563      0.8805         YES
+  Cloud Cover          0.0729      0.6169         YES
+  ANNUAL               0.2777      0.0000          NO
+  Jan-Feb              0.0607      0.8189         YES
+  Mar-May              0.1039      0.2021         YES
+  Jun-Sep              0.3157      0.0000          NO
+  Oct-Dec              0.0724      0.6263         YES
+  avgjune              0.1483      0.0195          NO
+  sub                  0.1718      0.0040          NO
+
+--- DUPLICATE CHECK ---
+  Total rows: 955, Unique rows: 955, Duplicates: 0

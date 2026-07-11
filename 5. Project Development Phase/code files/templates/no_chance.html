@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="No flood risk detected. The area appears safe based on current weather parameters.">
+    <title>✅ Safe — No Flood Risk — Rising Waters</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="result-page safe-page">
+    <!-- Rain Animation (Light) -->
+    <div class="rain-container" id="rainContainer"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">🌊</span>
+            <span class="nav-title">Rising Waters</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/Predict" class="nav-link">Predict</a>
+        </div>
+    </nav>
+
+    <!-- Safe Result -->
+    <main class="result-section">
+        <div class="result-container glassmorphism safe-card">
+            <!-- Success Header -->
+            <div class="result-icon safe-icon bounce-animation">
+                <span>✅</span>
+            </div>
+            
+            <h1 class="result-title safe-title">No Flood Risk Detected</h1>
+            
+            <div class="result-badge safe-badge">
+                <span>🛡️ LOW RISK — AREA APPEARS SAFE</span>
+            </div>
+
+            <p class="result-description">
+                Based on the weather parameters you provided, our XGBoost machine learning model 
+                predicts <strong>no significant flood risk</strong> under the current conditions. 
+                However, always stay vigilant and monitor weather updates.
+            </p>
+
+            <!-- Safety Tips -->
+            <div class="safety-grid">
+                <div class="safety-card">
+                    <span class="safety-icon">📋</span>
+                    <h4>Stay Prepared</h4>
+                    <p>Maintain an emergency plan even during low-risk periods.</p>
+                </div>
+                <div class="safety-card">
+                    <span class="safety-icon">🔄</span>
+                    <h4>Regular Monitoring</h4>
+                    <p>Continue checking weather forecasts for any sudden changes.</p>
+                </div>
+                <div class="safety-card">
+                    <span class="safety-icon">🏗️</span>
+                    <h4>Infrastructure</h4>
+                    <p>Ensure proper drainage systems are maintained and functional.</p>
+                </div>
+                <div class="safety-card">
+                    <span class="safety-icon">🌱</span>
+                    <h4>Prevention</h4>
+                    <p>Support afforestation and watershed management initiatives.</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="result-actions">
+                <a href="/Predict" class="btn btn-success" id="predictAgainBtn">
+                    <span>🔄</span> Predict Again
+                </a>
+                <a href="/" class="btn btn-outline-light" id="homeBtn">
+                    <span>🏠</span> Back to Home
+                </a>
+            </div>
+
+            <!-- Model Info -->
+            <div class="result-model-info">
+                <span>Powered by XGBoost Classifier | Accuracy: 96.55%</span>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

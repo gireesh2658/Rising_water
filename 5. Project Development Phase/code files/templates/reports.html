@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Evaluation Reports — Rising Waters</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050814;
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.10);
+            --text-main: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, rgba(0, 242, 254, 0.05), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(79, 172, 254, 0.1), transparent 40%);
+            background-attachment: fixed;
+            padding-bottom: 60px;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky; top: 0; width: 100%;
+            padding: 20px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+            background: rgba(5, 8, 20, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .nav-brand { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .nav-brand svg { width: 28px; height: 28px; fill: url(#grad1); }
+        .nav-links a { color: var(--text-main); text-decoration: none; margin-left: 30px; font-weight: 500; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent-cyan); }
+
+        /* Header */
+        .header { text-align: center; padding: 60px 20px; }
+        .header h1 { font-size: 3rem; margin-bottom: 10px; }
+        .header h1 span { background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { color: var(--text-muted); font-size: 1.1rem; }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+            padding: 0 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .report-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: rgba(0, 242, 254, 0.3);
+        }
+
+        .report-card h3 { font-size: 1.5rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;}
+        .report-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5; }
+        
+        .img-container {
+            width: 100%;
+            background: white; /* White bg for matplotlib plots to look sharp */
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+            padding: 10px;
+        }
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Text Report */
+        pre#classReport {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 12px;
+            color: #00f2fe;
+            font-family: monospace;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            border: 1px solid var(--glass-border);
+            flex-grow: 1;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#4facfe" />
+        <stop offset="100%" stop-color="#00f2fe" />
+      </linearGradient>
+    </svg>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <svg viewBox="0 0 24 24"><path d="M12,2C12,2 5,10.08 5,14.5C5,18.36 8.13,21.5 12,21.5C15.87,21.5 19,18.36 19,14.5C19,10.08 12,2 12,2Z"/></svg>
+            Rising Waters
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/Predict">Predict</a>
+            <a href="/reports" style="color: var(--accent-cyan);">Reports</a>
+            <a href="/history">History</a>
+            {% if session.get('user_id') %}
+                <span style="margin-left: 30px; color: #00d2ff; font-weight: 600;">Welcome, {{ session.get('user_name') }}</span>
+                <a href="/logout" style="color: #f87171;">Logout</a>
+            {% else %}
+                <a href="/login" style="color: #4ade80;">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <header class="header">
+        <h1>Model Evaluation <span>Dashboard</span></h1>
+        <p>Comprehensive performance metrics for the optimized XGBoost flood prediction model.</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <!-- ROC Curve -->
+        <div class="report-card">
+            <h3>📈 ROC Curve</h3>
+            <p>Visualizes the trade-off between the true positive rate and false positive rate, demonstrating the model's high discriminative ability.</p>
+            <div class="img-container">
+                <img src="/reports/roc_curve.png" alt="ROC Curve" onerror="this.onerror=null; this.parentElement.innerHTML='<p style=\'color:black\'>Plot generating...</p>'">
+            </div>
+        </div>
+
+        <!-- Confusion Matrix -->
+        <div class="report-card">
+            <h3>🧩 Confusion Matrix</h3>
+            <p>A heatmap displaying the exact counts of true positives, false positives, true negatives, and false negatives to evaluate prediction accuracy.</p>
+            <div class="img-container">
+                <img src="/reports/confusion_matrix.png" alt="Confusion Matrix" onerror="this.onerror=null; this.parentElement.innerHTML='<p style=\'color:black\'>Plot generating...</p>'">
+            </div>
+        </div>
+
+        <!-- Feature Importance -->
+        <div class="report-card">
+            <h3>🌟 Feature Importance</h3>
+            <p>Ranks the input variables by their impact on the model's decision-making process, highlighting the most critical meteorological factors.</p>
+            <div class="img-container">
+                <img src="/reports/feature_importance.png" alt="Feature Importance" onerror="this.onerror=null; this.parentElement.innerHTML='<p style=\'color:black\'>Plot generating...</p>'">
+            </div>
+        </div>
+
+        <!-- Classification Report -->
+        <div class="report-card">
+            <h3>📋 Classification Report</h3>
+            <p>Detailed precision, recall, and F1-score metrics for both risk classes, providing a granular look at performance across the test set.</p>
+            <pre id="classReport">Loading report data...</pre>
+        </div>
+    </div>
+
+    <script>
+        // Fetch Classification Report
+        fetch('/reports/classification_report.txt')
+            .then(response => {
+                if(!response.ok) throw new Error('Report generation in progress...');
+                return response.text();
+            })
+            .then(text => {
+                document.getElementById('classReport').textContent = text;
+            })
+            .catch(err => {
+                document.getElementById('classReport').textContent = err.message;
+            });
+    </script>
+</body>
+</html>

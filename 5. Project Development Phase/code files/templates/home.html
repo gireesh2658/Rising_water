@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rising Waters — A Machine Learning Approach to Flood Prediction. Predict flood risks using weather data and advanced ML algorithms.">
+    <title>Rising Waters — Flood Prediction System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="home-page">
+    <!-- Animated Background -->
+    <div class="rain-container" id="rainContainer"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">🌊</span>
+            <span class="nav-title">Rising Waters</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/Predict" class="nav-link">Predict</a>
+            <a href="/reports" class="nav-link">Reports</a>
+            <a href="/history" class="nav-link">History</a>
+            {% if session.get('user_id') %}
+                <span class="nav-link" style="color: #00d2ff; font-weight: 600;">Welcome, {{ session.get('user_name') }}</span>
+                <a href="/logout" class="nav-link" style="color: #f87171;">Logout</a>
+            {% else %}
+                <a href="/login" class="nav-link" style="color: #4ade80;">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="hero-section">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-icon">🤖</span>
+                <span>Machine Learning Powered</span>
+            </div>
+            <h1 class="hero-title">
+                Rising <span class="gradient-text">Waters</span>
+            </h1>
+            <p class="hero-subtitle">
+                A Machine Learning Approach to Flood Prediction
+            </p>
+            <p class="hero-description">
+                Predict flood risks before they happen. Our AI-powered system analyzes weather data 
+                including rainfall patterns, cloud cover, and meteorological parameters to deliver 
+                instant flood risk assessments — empowering communities and authorities to act early.
+            </p>
+            
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-number">96.55%</span>
+                    <span class="stat-label">Model Accuracy</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">4</span>
+                    <span class="stat-label">ML Algorithms</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">5</span>
+                    <span class="stat-label">Weather Features</span>
+                </div>
+            </div>
+
+            <div class="hero-actions">
+                <a href="/Predict" class="btn btn-primary" id="predictBtn">
+                    <span>🔮</span> Predict Floods
+                </a>
+                <a href="#features" class="btn btn-outline" id="learnMoreBtn">
+                    <span>📖</span> Learn More
+                </a>
+            </div>
+        </div>
+
+        <!-- Removed visual dashboard to prevent dummy data -->
+    </main>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <h2 class="section-title">How It <span class="gradient-text">Works</span></h2>
+        <div class="features-grid">
+            <div class="feature-card glassmorphism">
+                <div class="feature-icon">📊</div>
+                <h3>Data Collection</h3>
+                <p>Historical weather data including annual rainfall, cloud visibility, seasonal rainfall, and meteorological parameters.</p>
+            </div>
+            <div class="feature-card glassmorphism">
+                <div class="feature-icon">🔬</div>
+                <h3>Data Analysis</h3>
+                <p>Comprehensive analysis using distribution plots, box plots, heatmaps, and descriptive statistics to uncover patterns.</p>
+            </div>
+            <div class="feature-card glassmorphism">
+                <div class="feature-icon">⚙️</div>
+                <h3>Preprocessing</h3>
+                <p>Missing value handling, outlier treatment via IQR capping, feature scaling with StandardScaler for optimal model performance.</p>
+            </div>
+            <div class="feature-card glassmorphism">
+                <div class="feature-icon">🧠</div>
+                <h3>ML Models</h3>
+                <p>Four algorithms compared: Decision Tree, Random Forest, KNN, and XGBoost — achieving 96.55% accuracy.</p>
+            </div>
+            <div class="feature-card glassmorphism">
+                <div class="feature-icon">🚀</div>
+                <h3>Real-Time Prediction</h3>
+                <p>Enter weather parameters and get instant flood risk predictions powered by the trained XGBoost model.</p>
+            </div>
+            <div class="feature-card glassmorphism">
+                <div class="feature-icon">🛡️</div>
+                <h3>Disaster Preparedness</h3>
+                <p>Early warnings enable evacuation planning, resource allocation, and proactive disaster response strategies.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Rising Waters — A Machine Learning Approach to Flood Prediction</p>
+        <p class="footer-sub">Rising Waters Project | Disaster Risk Management</p>
+        <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">Privacy Notice: Weather data submitted for predictions is processed securely and logged anonymously for model improvement.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

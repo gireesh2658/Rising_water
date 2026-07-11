@@ -1,0 +1,69 @@
+{
+    "info": {
+        "name": "Rising Waters Flood Prediction API",
+        "description": "Functional and benchmarking test collection for the Flood Prediction ML backend.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Health Check",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "http://127.0.0.1:5000/health",
+                    "protocol": "http",
+                    "host": ["127", "0", "0", "1"],
+                    "port": "5000",
+                    "path": ["health"]
+                }
+            }
+        },
+        {
+            "name": "Valid Prediction",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"temp\": 30.5,\n  \"humidity\": 78.0,\n  \"cloud_cover\": 42.0,\n  \"annual\": 3200.5,\n  \"jan_feb\": 15.2,\n  \"mar_may\": 210.4,\n  \"jun_sep\": 2500.5,\n  \"oct_dec\": 450.3\n}"
+                },
+                "url": {
+                    "raw": "http://127.0.0.1:5000/predict",
+                    "protocol": "http",
+                    "host": ["127", "0", "0", "1"],
+                    "port": "5000",
+                    "path": ["predict"]
+                }
+            }
+        },
+        {
+            "name": "Missing Data Prediction",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"temp\": 30.5,\n  \"humidity\": 78.0\n}"
+                },
+                "url": {
+                    "raw": "http://127.0.0.1:5000/predict",
+                    "protocol": "http",
+                    "host": ["127", "0", "0", "1"],
+                    "port": "5000",
+                    "path": ["predict"]
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Predict flood risks using our ML Model.">
+    <title>Predict Flood Risk — Rising Waters</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Add some extra styling for the fetch UI */
+        .btn-submit {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        #result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        .result-high { color: #ff4d4d; }
+        .result-low { color: #43e97b; }
+        
+        /* Navbar styling */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .nav-brand { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none;}
+        .nav-links { display: flex; gap: 20px; }
+        .nav-link { color: #ccc; text-decoration: none; font-weight: 600; font-size: 1rem; transition: color 0.3s; }
+        .nav-link:hover, .nav-link.active { color: #4facfe; }
+    </style>
+</head>
+<body class="predict-page">
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <span style="font-size: 1.8rem;">🌊</span> Rising Waters
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/Predict" class="nav-link active">Predict</a>
+            <a href="/reports" class="nav-link">Reports</a>
+            <a href="/history" class="nav-link">History</a>
+            {% if session.get('user_id') %}
+                <span class="nav-link" style="color: #00d2ff; font-weight: 600;">Welcome, {{ session.get('user_name') }}</span>
+                <a href="/logout" class="nav-link" style="color: #f87171;">Logout</a>
+            {% else %}
+                <a href="/login" class="nav-link" style="color: #4ade80;">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Logo Section -->
+        <header class="page-header">
+            <div class="logo-container">
+                <div class="logo-icon">🌊</div>
+                <h1 class="logo-title">Rising Waters</h1>
+            </div>
+            <p class="logo-subtitle">Machine Learning Flood Prediction System</p>
+        </header>
+
+        <!-- Intro Content -->
+        <section class="intro-section">
+            <h2 class="main-headline">Predict Flood Risk Before It<br>Happens</h2>
+            <p class="main-description">
+                Analyze rainfall, humidity, cloud cover and seasonal weather conditions 
+                using an intelligent Machine Learning model. Receive an instant 
+                prediction that helps identify potential flood situations.
+            </p>
+        </section>
+
+        <!-- Prediction Form -->
+        <section class="form-section">
+            <div class="form-card">
+                <h3 class="form-title">Flood Prediction</h3>
+                
+                <form id="predict-form" class="prediction-form">
+                    <div class="form-grid">
+                        
+                        <!-- Input: Temp -->
+                        <div class="form-group">
+                            <label for="temp">
+                                <span class="label-icon">🌡️</span> Temperature (°C)
+                            </label>
+                            <input type="number" step="any" id="temp" name="temp" class="form-input" min="-10" max="60" required placeholder="Example: 30">
+                        </div>
+
+                        <!-- Input: Humidity -->
+                        <div class="form-group">
+                            <label for="humidity">
+                                <span class="label-icon">💧</span> Humidity (%)
+                            </label>
+                            <input type="number" step="any" id="humidity" name="humidity" class="form-input" min="0" max="100" required placeholder="Example: 75">
+                        </div>
+
+                        <!-- Input: Cloud Cover -->
+                        <div class="form-group">
+                            <label for="cloud_cover">
+                                <span class="label-icon">☁️</span> Cloud Cover (%)
+                            </label>
+                            <input type="number" step="any" id="cloud_cover" name="cloud_cover" class="form-input" min="0" max="100" required placeholder="Example: 40">
+                        </div>
+
+                        <!-- Input: Annual Rainfall -->
+                        <div class="form-group">
+                            <label for="annual">
+                                <span class="label-icon">🌧️</span> Annual Rainfall (mm)
+                            </label>
+                            <input type="number" step="any" id="annual" name="annual" class="form-input" min="0" max="20000" required placeholder="Example: 3200">
+                        </div>
+
+                        <!-- Input: Jan-Feb -->
+                        <div class="form-group">
+                            <label for="jan_feb">
+                                <span class="label-icon">❄️</span> Jan-Feb Rainfall (mm)
+                            </label>
+                            <input type="number" step="any" id="jan_feb" name="jan_feb" class="form-input" min="0" max="20000" required placeholder="Example: 9.5">
+                        </div>
+
+                        <!-- Input: Mar-May -->
+                        <div class="form-group">
+                            <label for="mar_may">
+                                <span class="label-icon">🌸</span> Mar-May Rainfall (mm)
+                            </label>
+                            <input type="number" step="any" id="mar_may" name="mar_may" class="form-input" min="0" max="20000" required placeholder="Example: 350.2">
+                        </div>
+
+                        <!-- Input: Jun-Sep -->
+                        <div class="form-group">
+                            <label for="jun_sep">
+                                <span class="label-icon">☀️</span> Jun-Sep Rainfall (mm)
+                            </label>
+                            <input type="number" step="any" id="jun_sep" name="jun_sep" class="form-input" min="0" max="20000" required placeholder="Example: 2300">
+                        </div>
+
+                        <!-- Input: Oct-Dec -->
+                        <div class="form-group">
+                            <label for="oct_dec">
+                                <span class="label-icon">🍂</span> Oct-Dec Rainfall (mm)
+                            </label>
+                            <input type="number" step="any" id="oct_dec" name="oct_dec" class="form-input" min="0" max="20000" required placeholder="Example: 250">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submit-btn">
+                        Run Prediction
+                    </button>
+                    
+                    <div id="result-box"></div>
+                    <p style="margin-top: 20px; font-size: 0.85rem; color: #aaa; text-align: center; line-height: 1.4;">
+                        <em>Disclaimer: Rising Waters is an AI-powered experimental tool. Predictions should not replace official emergency broadcast systems. Always follow local government and disaster management guidelines during severe weather.</em>
+                    </p>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('predict-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const resultBox = document.getElementById('result-box');
+            btn.classList.add('loading');
+            btn.innerText = 'Analyzing...';
+            resultBox.style.display = 'none';
+
+            const payload = {
+                temp: document.getElementById('temp').value,
+                humidity: document.getElementById('humidity').value,
+                cloud_cover: document.getElementById('cloud_cover').value,
+                annual: document.getElementById('annual').value,
+                jan_feb: document.getElementById('jan_feb').value,
+                mar_may: document.getElementById('mar_may').value,
+                jun_sep: document.getElementById('jun_sep').value,
+                oct_dec: document.getElementById('oct_dec').value
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Server error occurred.');
+                }
+                
+                const percent = (data.probability * 100).toFixed(1);
+                
+                resultBox.style.display = 'block';
+                if (data.prediction === 'HIGH') {
+                    resultBox.innerHTML = `
+                        <h3 class="result-high">⚠️ HIGH RISK (${percent}% Confidence)</h3>
+                        <p style="margin-top:10px; color:#ccc;">${data.message}</p>
+                    `;
+                    resultBox.style.borderColor = 'rgba(255, 77, 77, 0.5)';
+                } else {
+                    resultBox.innerHTML = `
+                        <h3 class="result-low">✅ LOW RISK (${percent}% Confidence)</h3>
+                        <p style="margin-top:10px; color:#ccc;">${data.message}</p>
+                    `;
+                    resultBox.style.borderColor = 'rgba(67, 233, 123, 0.5)';
+                }
+
+            } catch (err) {
+                resultBox.style.display = 'block';
+                resultBox.innerHTML = `<p style="color:#ff4d4d;">Error: ${err.message}</p>`;
+                resultBox.style.borderColor = 'rgba(255, 77, 77, 0.5)';
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerText = 'Run Prediction';
+            }
+        });
+    </script>
+</body>
+</html>

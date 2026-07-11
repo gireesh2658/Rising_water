@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flood risk detected! Take immediate precautionary measures.">
+    <title>🚨 Flood Risk Detected - Rising Waters</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="result-page danger-page">
+    <!-- Rain Animation (Heavy) -->
+    <div class="rain-container heavy-rain" id="rainContainer"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">🌊</span>
+            <span class="nav-title">Rising Waters</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/Predict" class="nav-link">Predict</a>
+        </div>
+    </nav>
+
+    <!-- Flood Alert Result -->
+    <main class="result-section">
+        <div class="result-container glassmorphism danger-card">
+            <!-- Alert Header -->
+            <div class="result-icon danger-icon pulse-animation">
+                <span>🚨</span>
+            </div>
+            
+            <h1 class="result-title danger-title">Flood Risk Detected!</h1>
+            
+            <div class="result-badge danger-badge">
+                <span>⚠️ HIGH RISK — FLOOD PREDICTED</span>
+            </div>
+
+            <p class="result-description">
+                Based on the weather parameters you provided, our XGBoost machine learning model 
+                predicts a <strong>high probability of flooding</strong> in the given conditions. 
+                Immediate precautionary measures are strongly recommended.
+            </p>
+
+            <!-- Warning Cards -->
+            <div class="warning-grid">
+                <div class="warning-card">
+                    <span class="warning-icon">🏃</span>
+                    <h4>Evacuate</h4>
+                    <p>Move to higher ground immediately if in a flood-prone area.</p>
+                </div>
+                <div class="warning-card">
+                    <span class="warning-icon">📞</span>
+                    <h4>Alert Authorities</h4>
+                    <p>Contact local disaster management and emergency services.</p>
+                </div>
+                <div class="warning-card">
+                    <span class="warning-icon">🎒</span>
+                    <h4>Emergency Kit</h4>
+                    <p>Prepare emergency supplies: water, food, first aid, and documents.</p>
+                </div>
+                <div class="warning-card">
+                    <span class="warning-icon">📡</span>
+                    <h4>Stay Informed</h4>
+                    <p>Monitor weather updates and follow official guidance channels.</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="result-actions">
+                <a href="/Predict" class="btn btn-danger" id="predictAgainBtn">
+                    <span>🔄</span> Predict Again
+                </a>
+                <a href="/" class="btn btn-outline-light" id="homeBtn">
+                    <span>🏠</span> Back to Home
+                </a>
+            </div>
+
+            <!-- Model Info -->
+            <div class="result-model-info">
+                <span>Powered by XGBoost Classifier | Accuracy: 96.55%</span>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>
